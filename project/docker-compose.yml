@@ -1,0 +1,28 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: snake_api
+    ports:
+      - "8000:8000"
+    environment:
+      - LEADERBOARD_DIR=/data           # <— use DIR, not PATH
+    volumes:
+      - leaderboard_data:/data
+
+  game:
+    build:
+      context: ./snake_game
+    #  dockerfile: Dockerfile           # optional; default is Dockerfile
+    container_name: snake_game
+    depends_on:
+      - api
+    environment:
+      - DISPLAY=${DISPLAY}
+      - API_URL=http://api:8000
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix   # X11 for Pygame on Linux
+
+volumes:
+  leaderboard_data:
